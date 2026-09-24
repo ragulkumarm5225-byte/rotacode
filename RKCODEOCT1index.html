@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100 selection:bg-rose-600 selection:text-white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>30-Day ROTA CODE | Timed Unlock & Cipher Quest</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Tone.js Synthesizer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+            cert: ['Cinzel', 'serif']
+          },
+          colors: {
+            rotaract: {
+              pink: '#E11D48',
+              crimson: '#BE123C',
+              dark: '#4C0519',
+              gold: '#F59E0B',
+              cyan: '#06B6D4'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+   .badge-unlocked-glow {
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+    }
+    .badge-locked {
+      filter: grayscale(100%) opacity(0.35);
+    }
+   .gold-gradient-text {
+      background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #B45309 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+   .card-locked-pattern {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(30, 41, 59, 0.2),
+        rgba(30, 41, 59, 0.2) 10px,
+        rgba(15, 23, 42, 0.35) 10px,
+        rgba(15, 23, 42, 0.35) 20px
+      );
+    }
+    .timer-pulse {
+      animation: pulse-red 1.5s infinite;
+    }
+    @keyframes pulse-red {
+      0%, 100% { color: #f87171; text-shadow: 0 0 10px rgba(248,113,113,0.5); }
+      50% { color: #ef4444; text-shadow: 0 0 20px rgba(239,68,68,0.8); }
+    }
+    @media print {
+      body * { visibility: hidden; }
+     #printable-certificate, #printable-certificate * { visibility: visible; }
+     #printable-certificate {
+        position: absolute; left: 0; top: 0; width: 100%;
+        margin: 0; padding: 24px; background: white !important; color: black !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-full font-sans antialiased bg-slate-950 text-slate-100 flex flex-col justify-between">
+  
+  <!-- NEW 3D CINEMATIC VIDEO INTRO OVERLAY -->
+  <div id="cinematic-video-intro" class="fixed inset-0 z-[200] bg-black flex items-center justify-center transition-opacity duration-1000">
+    <video id="intro-video-player" class="absolute inset-0 w-full h-full object-cover" muted playsinline>
+      <source src="video.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div class="absolute bottom-10 right-10 z-10">
+      <button onclick="skipVideoIntro()" class="px-6 py-2 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/30 text-white font-mono text-sm tracking-widest rounded-full transition duration-300 flex items-center gap-2">
+        <span>SKIP</span>
+        <i data-lucide="skip-forward" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+  
+  <!-- INTRO OVERLAY SPLASH SCREEN (Interactive Canvas) -->
+  <div id="intro-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/95 backdrop-blur-xl transition-opacity duration-500 overflow-hidden hidden opacity-0">
+    <canvas id="intro-interactive-canvas" class="absolute inset-0 w-full h-full z-0 opacity-60"></canvas>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-black/80 z-0 pointer-events-none"></div>
+  
+    <div class="max-w-3xl w-full p-6 text-center relative z-10">
+      <h1 class="text-4xl md:text-6xl font-black text-white font-display mb-4 tracking-tight">JOIN THE <span class="text-rose-500">ROTA CODE</span></h1>
+      
+      <div class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 font-bold text-sm mb-10 animate-bounce shadow-lg shadow-amber-900/20">
+        <i data-lucide="gift" class="w-5 h-5"></i> Special Offer & Bonus for October Born People!
+      </div>
+      
+      <button onclick="dismissIntro()" class="px-10 py-4 bg-gradient-to-r from-rose-600 via-rotaract-pink to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-black rounded-xl shadow-xl hover:scale-105 transition transform text-lg shadow-rose-900/50">
+        ENTER PORTAL
+      </button>
+    </div>
+  </div>
+  
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div id="header-icon" class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rotaract-pink via-rose-600 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-950/60 transition-colors">
+          <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <span id="header-subtitle" class="text-[10px] font-black tracking-widest uppercase text-rose-400">ROTA CODE</span>
+          <h1 id="header-title" class="text-sm sm:text-base font-extrabold tracking-tight text-white font-display">
+            30-DAY CHALLENGE PORTAL
+          </h1>
+        </div>
+      </div>
+      <div id="nav-actions-container" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+  
+  <main class="flex-grow">
+    <!-- VIEW 1: PUBLIC REGISTRATION & LOGIN SCREEN -->
+    <div id="view-public" class="max-w-6xl mx-auto px-4 py-8 sm:py-12">
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-4">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Official Launch: October 1, 2026</span>
+          </div>
+          <!-- Live Tracker Badge -->
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold animate-pulse">
+            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+            <span id="public-challenger-count">Syncing live count...</span>
+          </div>
+        </div>
+        
+        <h2 class="text-3xl sm:text-5xl font-black text-white font-display tracking-tight leading-tight">
+          Unlock 30 Days • Crack Ciphers • <span class="gold-gradient-text">Reach Next Level</span>
+        </h2>
+        <p class="text-sm sm:text-base text-slate-400 mt-3 max-w-2xl mx-auto leading-relaxed">
+          Pay ₹10 entry to support community impact, upload your screenshot to Google Form, and login with your approved ID and Password.
+        </p>
+      </div>
+  
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Challenger Login Card -->
+        <div class="lg:col-span-5 glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl relative">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center border border-rose-500/30">
+              <i data-lucide="key-round" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-black text-white font-display">Portal Access</h3>
+              <p class="text-xs text-slate-400">Enter your credentials to continue.</p>
+            </div>
+          </div>
+  
+          <form id="form-user-login" onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Participant ID</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                  <i data-lucide="user-check" class="w-4 h-4"></i>
+                </span>
+                <input type="text" id="login-input-id" required placeholder="e.g. AISHU-001" class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-rose-500 font-mono transition">
+              </div>
+            </div>
+  
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Access Password</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                  <i data-lucide="lock" class="w-4 h-4"></i>
+                </span>
+                <input type="password" id="login-input-pass" required placeholder="••••••••" class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-rose-500 transition">
+              </div>
+            </div>
+  
+            <button type="submit" id="btn-login-submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-rotaract-pink via-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-sm shadow-xl shadow-rose-950/60 transition transform active:scale-95 flex items-center justify-center gap-2">
+              <span>Enter Portal</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </form>
+  
+          <div class="mt-6 pt-5 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-500">
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Google Sheet Connected</span>
+            <button onclick="fetchSheetLogins(true)" class="text-amber-400 hover:underline flex items-center gap-1"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh</button>
+          </div>
+        </div>
+  
+        <!-- ₹10 Payment & Form Upload Banner -->
+        <div class="lg:col-span-7 glass-panel rounded-3xl p-6 sm:p-8 border border-rose-500/30 shadow-2xl relative overflow-hidden">
+          <div class="flex items-center justify-between gap-4 mb-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold">
+              <i data-lucide="credit-card" class="w-3.5 h-3.5 text-amber-400"></i> Step 1: Entry Fee & Approval
+            </div>
+            <span class="text-xs font-mono bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 text-slate-300">
+              Fee: <strong class="text-emerald-400">₹10 INR</strong>
+            </span>
+          </div>
+  
+          <h3 class="text-2xl font-black text-white font-display">Pay ₹10 & Submit Verification</h3>
+          <p class="text-xs text-slate-400 mt-1">
+            Scan via GPay, PhonePe, Paytm, or BHIM. After paying ₹10, upload the screenshot to our Google Form. Once approved by Admin, your login is active immediately on any phone.
+          </p>
+  
+          <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5 items-center">
+            <div class="p-4 rounded-2xl bg-white text-slate-950 text-center shadow-lg">
+              <img id="public-upi-qr" src="" alt="Scan UPI QR" class="w-40 h-40 object-contain mx-auto rounded-lg">
+              <p class="text-[11px] font-bold text-slate-700 mt-2 font-mono">Scan QR to Pay ₹10</p>
+            </div>
+  
+            <div class="space-y-3">
+              <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+                <span class="text-[11px] font-semibold text-slate-400 block mb-1">Rotaract Official UPI ID:</span>
+                <div class="flex items-center justify-between gap-2">
+                  <span id="public-display-upi" class="font-mono text-xs text-amber-300 font-bold break-all select-all">Craishu78@okaxis</span>
+                  <button onclick="copyCurrentUpiId()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition" title="Copy UPI ID">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+  
+              <!-- Button pointing to the designated Form for uploading -->
+              <a href="https://docs.google.com/forms/d/e/1FAIpQLSdtKZxYsV7GfeGGzZ64tFBUNPOE4nnwJVpvYkmHVT7cnR4lIw/viewform" target="_blank" class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-950/40 transition">
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+                <span>Open Google Form (Upload Proof)</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- VIEW 2: UNLOCKED MEMBER DASHBOARD -->
+    <div id="view-member" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
+      <!-- Member Tab Navigation -->
+      <div class="flex items-center gap-2 sm:gap-4 mb-8 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-hide">
+        <button onclick="switchMemberTab('home')" id="btn-tab-home" class="px-5 py-2.5 rounded-xl bg-rose-600 text-white font-bold text-sm shadow-lg shadow-rose-900/20 transition whitespace-nowrap flex items-center gap-2">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+        </button>
+        <button onclick="switchMemberTab('quests')" id="btn-tab-quests" class="px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 font-bold text-sm transition whitespace-nowrap flex items-center gap-2">
+          <i data-lucide="target" class="w-4 h-4"></i> Daily Quests
+        </button>
+        <button onclick="switchMemberTab('leaderboard')" id="btn-tab-leaderboard" class="px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 font-bold text-sm transition whitespace-nowrap flex items-center gap-2">
+          <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Leaderboard
+        </button>
+        <button onclick="switchMemberTab('rotabirthday')" id="btn-tab-rotabirthday" class="px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 font-bold text-sm transition whitespace-nowrap flex items-center gap-2">
+          <i data-lucide="party-popper" class="w-4 h-4 text-amber-400"></i> RotaBirthday Impact
+        </button>
+      </div>
+  
+      <!-- TAB 1: HOME (Profile, Referrals, Badges, Video) -->
+      <div id="tab-home" class="space-y-6">
+        <!-- Profile Header -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
+          <i onclick="foundEasterEgg()" data-lucide="aperture" class="w-5 h-5 text-amber-500 opacity-5 hover:opacity-100 cursor-pointer absolute top-5 right-5 z-20 transition duration-300 transform hover:rotate-90" title="What is this?"></i>
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+            <div class="flex items-center gap-4">
+              <div id="member-avatar" class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rotaract-pink to-amber-500 text-white font-display font-black text-2xl flex items-center justify-center shadow-xl shadow-rose-950/60 ring-4 ring-rose-500/20 shrink-0">
+                RK
+              </div>
+              <div>
+                <div class="flex flex-wrap items-center gap-2.5">
+                  <h2 id="member-name-heading" class="text-2xl font-black text-white font-display">RK</h2>
+                  <span id="member-id-badge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">ID: AISHU-001</span>
+                  <span id="member-rank-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-[0_0_10px_rgba(99,102,241,0.2)]">Novice</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                    <i data-lucide="badge-check" class="w-3.5 h-3.5 text-emerald-400"></i> Verified Participant
+                  </span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-400 mt-1">
+                  Sequential quest unlocked 1 day at a time starting October 1, 2026.
+                </p>
+              </div>
+            </div>
+  
+            <!-- Dynamic Stats Grid (Progress, Streak, Points) -->
+            <div class="grid grid-cols-3 gap-3 w-full lg:w-auto">
+              <div class="bg-slate-900 p-3.5 rounded-2xl border border-slate-700/60 text-center shadow-inner min-w-[90px]">
+                <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Progress</div>
+                <div id="stat-progress" class="text-xl font-black text-white font-mono">0<span class="text-xs text-slate-500">/30</span></div>
+              </div>
+              <div class="bg-rose-950/30 p-3.5 rounded-2xl border border-rose-500/30 text-center shadow-inner min-w-[90px]">
+                <div class="text-[10px] uppercase font-bold text-rose-400 tracking-wider mb-1 flex justify-center items-center gap-1"><i data-lucide="flame" class="w-3 h-3"></i> Streak</div>
+                <div id="stat-streak" class="text-xl font-black text-white font-mono">0</div>
+              </div>
+              <div class="bg-amber-500/10 p-3.5 rounded-2xl border border-amber-500/30 text-center shadow-inner min-w-[90px]">
+                <div class="text-[10px] uppercase font-bold text-amber-400 tracking-wider mb-1 flex justify-center items-center gap-1"><i data-lucide="star" class="w-3 h-3"></i> Points</div>
+                <div id="member-score-display" class="text-xl font-black text-white font-mono">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Referral Claim Hub (Automated Link System) -->
+        <div class="glass-panel rounded-3xl p-6 border border-amber-500/30 shadow-2xl relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-950">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="flex-1">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-widest mb-2 border border-amber-500/40">
+                <i data-lucide="gift" class="w-3.5 h-3.5"></i> Referral Hub
+              </div>
+              <h3 class="text-xl font-black text-white font-display mb-1">Invite Friends & Earn Points</h3>
+              <p class="text-xs text-slate-400">Share your Referral Link. When a friend registers and logs in using your link, <strong class="text-amber-400">BOTH of you get +5 Rotapoints</strong> instantly!</p>
+              
+              <div class="mt-4 inline-block w-full max-w-lg">
+                <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Your Unique Referral Link:</span>
+                <div class="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-slate-700 w-full">
+                  <span id="display-ref-code" class="font-mono text-[11px] sm:text-xs font-black text-amber-400 tracking-wider px-2 select-all whitespace-nowrap overflow-x-auto block w-full"></span>
+                  <button onclick="copyMyRefCode()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition flex items-center gap-1 shrink-0">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Link
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="w-full md:w-auto bg-slate-950/80 p-4 rounded-2xl border border-slate-800 text-center flex flex-col justify-center items-center md:min-w-[150px]">
+               <span class="text-[10px] text-slate-500 font-semibold uppercase mb-1">Successful Invites</span>
+               <span id="ref-claimed-count" class="text-3xl font-mono font-black text-amber-400">0</span>
+               <span class="text-[10px] text-emerald-400 mt-1 font-bold">+5 Pts Each</span>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Badges Shelf -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl relative">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+              <span>Digital Badges Shelf (9 Prestige Tiers)</span>
+            </h3>
+            <span id="badges-unlocked-summary" class="text-xs font-mono text-amber-300 bg-amber-500/10 px-3 py-0.5 rounded-full border border-amber-500/30">
+              0 of 9 Unlocked
+            </span>
+          </div>
+          <div id="badges-shelf-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5"></div>
+        </div>
+      </div>
+  
+      <!-- TAB 2: QUESTS GRID -->
+      <div id="tab-quests" class="hidden space-y-6">
+        <!-- Roadmap Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+          <div>
+            <h3 class="text-2xl font-black text-white font-display flex items-center gap-2">
+              <span>30-Day Challenge Roadmap</span>
+              <span class="text-xs font-normal text-slate-400 font-sans">(1 Day = 1 Task Unlock)</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Tasks unlock sequentially starting October 1, 2026.</p>
+          </div>
+          
+          <div>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdtKZxYsV7GfeGGzZ64tFBUNPOE4nnwJVpvYkmHVT7cnR4lIw/viewform" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-600 text-rose-300 text-xs font-bold transition shadow-md">
+              <i data-lucide="file-text" class="w-4 h-4 text-rose-400"></i>
+              <span>Google Submission Form</span>
+              <i data-lucide="external-link" class="w-3 h-3"></i>
+            </a>
+          </div>
+        </div>
+  
+        <!-- 30 Challenge Cards Grid -->
+        <div id="challenge-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+      </div>
+  
+      <!-- TAB 3: LEADERBOARD -->
+      <div id="tab-leaderboard" class="hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+              <i data-lucide="trophy" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-black text-white font-display">Hall of Fame</h3>
+              <p class="text-xs text-slate-400">Global rankings based on total Rotapoints.</p>
+            </div>
+          </div>
+          <button onclick="renderLeaderboard()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-bold rounded-xl border border-slate-700 transition flex items-center gap-2 shadow-md hover:shadow-cyan-900/20 hover:border-cyan-500/30">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh Board
+          </button>
+        </div>
+        
+        <!-- TOP 3 PODIUM -->
+        <div id="leaderboard-podium" class="grid grid-cols-3 gap-2 sm:gap-4 items-end min-h-[200px] mb-8 pt-10 px-2 sm:px-10">
+           <!-- Rendered via JS -->
+        </div>
+
+        <!-- LEADERBOARD TABLE -->
+        <div class="glass-panel rounded-3xl border border-slate-800 shadow-2xl overflow-hidden">
+          <div class="overflow-x-auto bg-slate-900/50">
+            <table class="w-full text-left border-collapse min-w-[650px]">
+              <thead>
+                <tr class="border-b border-slate-800/80 text-[10px] uppercase tracking-wider text-slate-500 bg-slate-950/80">
+                  <th class="py-4 px-5 font-bold w-20 text-center">Rank</th>
+                  <th class="py-4 px-5 font-bold">Challenger</th>
+                  <th class="py-4 px-5 font-bold text-center">Badges</th>
+                  <th class="py-4 px-5 font-bold text-center">Referrals</th>
+                  <th class="py-4 px-5 font-bold text-right">Rotapoints</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-table-body" class="divide-y divide-slate-800/40">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+        <!-- Badges Shelf -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl relative">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+              <span>Digital Badges Shelf (13 Prestige Tiers)</span>
+            </h3>
+            <span id="badges-unlocked-summary" class="text-xs font-mono text-amber-300 bg-amber-500/10 px-3 py-0.5 rounded-full border border-amber-500/30">
+              0 of 13 Unlocked
+            </span>
+          </div>
+          <div id="badges-shelf-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3.5"></div>
+        </div>
+      </div>
+  
+      <!-- TAB 2: QUESTS GRID -->
+      <div id="tab-quests" class="hidden space-y-6">
+        <!-- Roadmap Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+          <div>
+            <h3 class="text-2xl font-black text-white font-display flex items-center gap-2">
+              <span>30-Day Challenge Roadmap</span>
+              <span class="text-xs font-normal text-slate-400 font-sans">(1 Day = 1 Task Unlock)</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Tasks unlock sequentially starting October 1, 2026.</p>
+          </div>
+          
+          <div>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdtKZxYsV7GfeGGzZ64tFBUNPOE4nnwJVpvYkmHVT7cnR4lIw/viewform" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-600 text-rose-300 text-xs font-bold transition shadow-md">
+              <i data-lucide="file-text" class="w-4 h-4 text-rose-400"></i>
+              <span>Google Submission Form</span>
+              <i data-lucide="external-link" class="w-3 h-3"></i>
+            </a>
+          </div>
+        </div>
+  
+        <!-- 30 Challenge Cards Grid -->
+        <div id="challenge-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+      </div>
+  
+      <!-- TAB 3: LEADERBOARD -->
+      <div id="tab-leaderboard" class="hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+              <i data-lucide="trophy" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-black text-white font-display">Hall of Fame</h3>
+              <p class="text-xs text-slate-400">Global rankings based on total Rotapoints.</p>
+            </div>
+          </div>
+          <button onclick="renderLeaderboard()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-bold rounded-xl border border-slate-700 transition flex items-center gap-2 shadow-md hover:shadow-cyan-900/20 hover:border-cyan-500/30">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh Board
+          </button>
+        </div>
+        
+        <!-- TOP 3 PODIUM -->
+        <div id="leaderboard-podium" class="grid grid-cols-3 gap-2 sm:gap-4 items-end min-h-[200px] mb-8 pt-10 px-2 sm:px-10">
+           <!-- Rendered via JS -->
+        </div>
+
+        <!-- LEADERBOARD TABLE -->
+        <div class="glass-panel rounded-3xl border border-slate-800 shadow-2xl overflow-hidden">
+          <div class="overflow-x-auto bg-slate-900/50">
+            <table class="w-full text-left border-collapse min-w-[650px]">
+              <thead>
+                <tr class="border-b border-slate-800/80 text-[10px] uppercase tracking-wider text-slate-500 bg-slate-950/80">
+                  <th class="py-4 px-5 font-bold w-20 text-center">Rank</th>
+                  <th class="py-4 px-5 font-bold">Challenger</th>
+                  <th class="py-4 px-5 font-bold text-center">Badges</th>
+                  <th class="py-4 px-5 font-bold text-center">Referrals</th>
+                  <th class="py-4 px-5 font-bold text-right">Rotapoints</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-table-body" class="divide-y divide-slate-800/40">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: ROTABIRTHDAY -->
+      <div id="tab-rotabirthday" class="hidden space-y-6 text-center py-12">
+        <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold text-sm mb-6">
+          <i data-lucide="party-popper" class="w-4 h-4"></i> Coming Soon
+        </div>
+        
+        <h2 class="text-3xl md:text-5xl font-black text-white font-display mb-4">RotaBirthday <span class="gold-gradient-text">Impact</span></h2>
+        <p class="text-sm md:text-base text-slate-400 max-w-lg mx-auto leading-relaxed">
+          A special feature is being built to celebrate birthdays with impactful community service. Stay tuned to unlock exclusive birthday challenges and rewards!
+        </p>
+        
+        <div class="mt-8 flex items-center justify-center gap-3 text-xs font-mono text-slate-500">
+          <i data-lucide="clock" class="w-4 h-4"></i> Opening Soon
+        </div>
+      </div>
+  
+    </div>
+  
+    <!-- VIEW 3: ADMIN DASHBOARD (Hidden by default) -->
+    <div id="view-admin" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h2 class="text-3xl font-black text-white font-display flex items-center gap-3">
+            <i data-lucide="settings" class="w-8 h-8 text-rose-500"></i> Administrator Panel
+          </h2>
+          <p class="text-slate-400 text-sm mt-1">Manage all 30 days of tasks, customize points, hints, and timers.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="openAdminLogs()" class="px-4 py-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-bold hover:bg-amber-500/20 transition flex items-center gap-2">
+            <i data-lucide="clipboard-list" class="w-4 h-4"></i> View Submissions Log
+          </button>
+          <button onclick="resetToDefaults()" class="px-4 py-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/30 text-xs font-bold hover:bg-rose-500/20 transition flex items-center gap-2">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Factory Reset Quests
+          </button>
+        </div>
+      </div>
+  
+      <div id="admin-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <!-- Populated via JS -->
+      </div>
+    </div>
+  </main>
+  
+  <!-- MODALS -->
+  
+  <!-- Admin Edit Modal -->
+  <div id="modal-admin-edit" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div id="modal-admin-box" class="w-full max-w-xl rounded-3xl glass-panel p-6 sm:p-8 text-slate-100 relative shadow-2xl border border-rose-500/30">
+      <h3 class="text-xl font-black font-display text-white mb-4 border-b border-slate-700 pb-4">Edit Quest: Day <span id="admin-edit-day" class="text-rose-400"></span></h3>
+      
+      <form id="form-admin-edit" onsubmit="saveAdminSlot(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Title</label>
+          <input type="text" id="admin-edit-title" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Category</label>
+            <input type="text" id="admin-edit-category" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Task Type</label>
+            <select id="admin-edit-type" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500">
+              <option value="upload-task">Upload Screenshot</option>
+              <option value="pledge">Service Pledge</option>
+              <option value="text-trivia">Text Trivia</option>
+              <option value="cipher-task">Cipher / Code</option>
+            </select>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Description / Question / Clue</label>
+          <textarea id="admin-edit-desc" rows="3" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500"></textarea>
+        </div>
+  
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Hint / How to Solve (?)</label>
+          <textarea id="admin-edit-hint" rows="2" placeholder="Optional: Guide users on how to solve this" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500"></textarea>
+        </div>
+  
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Expected Answer / Passcode (for Trivia/Ciphers)</label>
+          <input type="text" id="admin-edit-answer" placeholder="Leave blank if not applicable" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500">
+          <p class="text-[10px] text-slate-500 mt-1">For trivia, separates acceptable answers with commas (e.g. 1968, year 1968)</p>
+        </div>
+  
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Rotapoints Awarded</label>
+            <input type="number" id="admin-edit-points" required min="0" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Time Limit (Seconds)</label>
+            <input type="number" id="admin-edit-time" required min="0" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500">
+            <p class="text-[10px] text-slate-500 mt-1">Set to 0 for unlimited time. (120 = 2 mins)</p>
+          </div>
+        </div>
+  
+        <div class="flex items-center gap-3 pt-4 border-t border-slate-800">
+          <button type="submit" class="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow transition">Save Changes</button>
+          <button type="button" onclick="closeAdminModal()" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- ADMIN SUBMISSIONS LOG MODAL -->
+  <div id="modal-admin-logs" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div id="modal-admin-logs-box" class="w-full max-w-5xl rounded-3xl glass-panel p-6 sm:p-8 text-slate-100 relative shadow-2xl border border-amber-500/30 max-h-[90vh] overflow-hidden flex flex-col transform transition-transform scale-95">
+      <button onclick="closeAdminLogs()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl transition z-10">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h3 class="text-xl font-black font-display text-white mb-4 border-b border-slate-700 pb-4 shrink-0 flex items-center gap-2">
+        <i data-lucide="clipboard-list" class="w-5 h-5 text-amber-400"></i> Participant Submissions Log
+      </h3>
+      
+      <div class="overflow-y-auto overflow-x-auto flex-1 rounded-xl border border-slate-800 bg-slate-950">
+        <table class="w-full text-left border-collapse min-w-[700px]">
+          <thead class="sticky top-0 bg-slate-900 z-10 shadow-md">
+            <tr class="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-500">
+              <th class="py-3 px-4 font-bold">Time / Date</th>
+              <th class="py-3 px-4 font-bold">Participant</th>
+              <th class="py-3 px-4 font-bold">Day</th>
+              <th class="py-3 px-4 font-bold">Submitted Answer</th>
+              <th class="py-3 px-4 font-bold text-right">Time Taken</th>
+            </tr>
+          </thead>
+          <tbody id="admin-logs-tbody" class="divide-y divide-slate-800/50">
+            <!-- JS Injected -->
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4 shrink-0 text-xs text-slate-500 flex justify-between">
+          <button onclick="clearAdminLogs()" class="text-rose-400 hover:underline font-bold">Clear All Logs</button>
+          <span>*Stored locally for this admin device.</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- CELEBRATION MODAL (Day 30 Level-Up) -->
+  <div id="modal-levelup" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-2xl hidden opacity-0 transition-opacity duration-300 overflow-y-auto">
+    <div class="w-full max-w-4xl py-10 px-4 sm:px-8 text-center relative">
+      <button onclick="closeLevelUpModal()" class="absolute top-2 right-4 text-slate-400 hover:text-white p-2 rounded-xl text-sm transition">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+  
+      <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs sm:text-sm font-black tracking-widest uppercase mb-6 animate-pulse">
+        <i data-lucide="crown" class="w-4 h-4 text-amber-400"></i>
+        <span>30-Day Quest Conquered • Official Citation</span>
+        <i data-lucide="crown" class="w-4 h-4 text-amber-400"></i>
+      </div>
+  
+      <h2 id="levelup-banner-text" class="text-3xl sm:text-5xl md:text-6xl font-black font-display tracking-tight text-white leading-tight">
+        CHALLENGER ENTERS INTO NEXT LEVEL WITH DIGITAL BADGES ADDED
+      </h2>
+  
+      <div class="mt-8 p-6 rounded-3xl bg-slate-900/90 border border-amber-500/40 badge-unlocked-glow">
+        <h4 class="text-xs font-bold uppercase tracking-widest text-amber-400 mb-4">Badges Hall of Fame</h4>
+        <div id="levelup-badges-shelf" class="grid grid-cols-2 sm:grid-cols-5 gap-3"></div>
+      </div>
+  
+      <!-- Printable Certificate -->
+      <div id="printable-certificate" class="mt-8 p-8 rounded-3xl bg-gradient-to-br from-amber-50 via-white to-amber-100 text-slate-950 border-8 border-double border-amber-600 shadow-2xl relative">
+        <div class="border-2 border-dashed border-amber-500 p-6 rounded-2xl relative">
+          <div class="text-[11px] font-black uppercase tracking-widest text-amber-800 font-sans">Rotaract District Citation of Merit</div>
+          <h3 class="text-2xl sm:text-4xl font-black font-cert text-slate-900 mt-2">CERTIFICATE OF COMPLETION</h3>
+          <p class="text-xs font-sans text-slate-600 mt-2">This is proudly presented to</p>
+          <div id="cert-participant-name" class="text-2xl sm:text-4xl font-bold font-cert text-rose-700 my-2 underline decoration-amber-500 underline-offset-8">
+            Participant Name
+          </div>
+          <p class="text-xs font-sans text-slate-700 max-w-xl mx-auto leading-relaxed">
+            For successfully answering all trivia quests and fulfilling all impact challenges in the Rotaract 30-Day Quest.
+          </p>
+          <div class="mt-6 pt-4 border-t border-amber-300 flex items-center justify-between text-[11px] font-sans font-bold text-slate-700">
+            <div>Participant ID: <span id="cert-participant-id" class="font-mono text-slate-900">ID-001</span></div>
+            <div>Status: <span class="text-emerald-700 font-bold">NEXT LEVEL UNLOCKED ✓</span></div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <button onclick="window.print()" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm shadow-xl flex items-center gap-2 transition">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>Print / Save Certificate PDF</span>
+        </button>
+        <button onclick="closeLevelUpModal()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-sm transition">
+          Back to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- MODAL: SLOT INTERACTION -->
+  <div id="modal-slot" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div id="modal-slot-box" class="w-full max-w-xl rounded-3xl glass-panel p-6 sm:p-8 text-slate-100 relative shadow-2xl max-h-[90vh] overflow-y-auto transform transition-transform scale-95 border border-slate-800">
+      <button onclick="closeSlotModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div id="modal-slot-body"></div>
+    </div>
+  </div>
+  
+  <!-- HOW TO PLAY MODAL -->
+  <div id="modal-how-to" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div id="modal-how-to-box" class="w-full max-w-xl rounded-3xl glass-panel p-6 sm:p-8 text-slate-100 relative shadow-2xl transform transition-transform scale-95 border border-slate-800">
+      <button onclick="closeHowToPlay()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center border border-cyan-500/30 shrink-0">
+          <i data-lucide="help-circle" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-black text-white font-display">How to Play ROTA CODE</h3>
+          <p class="text-xs text-slate-400">Your guide to mastering the 30-Day Quest.</p>
+        </div>
+      </div>
+      
+      <div class="space-y-4 text-sm text-slate-300 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-[10px] text-white shrink-0 mt-0.5">1</span>
+          <p class="text-xs leading-relaxed"><strong class="text-white">Register & Pay:</strong> Pay the ₹10 entry fee via QR and submit the screenshot to our Google Form. Wait for Admin approval to log in.</p>
+        </div>
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-[10px] text-white shrink-0 mt-0.5">2</span>
+          <p class="text-xs leading-relaxed"><strong class="text-white">Unlock Daily Tasks:</strong> One new task unlocks every single day starting October 1, 2026. Complete them consecutively to build your 🔥 Streak.</p>
+        </div>
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-[10px] text-white shrink-0 mt-0.5">3</span>
+          <p class="text-xs leading-relaxed"><strong class="text-white">Earn Rotapoints:</strong> Solve timed Ciphers/Trivia and use your unique Referral Link to invite friends (+5 pts each for you and your friend) to increase your score.</p>
+        </div>
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-[10px] text-white shrink-0 mt-0.5">4</span>
+          <p class="text-xs leading-relaxed"><strong class="text-white">Hints & Help:</strong> Stuck on a task? Look for the <i data-lucide="help-circle" class="w-3.5 h-3.5 inline text-cyan-400 mx-0.5"></i> hint button inside the task modal for a clue!</p>
+        </div>
+      </div>
+      
+      <button onclick="closeHowToPlay()" class="mt-6 w-full py-3.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs rounded-xl shadow-xl transition">
+        Got it, let's go!
+      </button>
+    </div>
+  </div>
+  
+  <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  
+  <script>
+    const GOOGLE_SHEET_ID = '1K6o5aXkgimjajm_Ueqj2a3IV_t60Iu9On5mR04YzHGA';
+    const SHEET_TAB_NAME  = 'Form responses 1';
+  
+    const CONFIG = {
+      upiId: 'Craishu78@okaxis',
+      googleFormUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSdtKZxYsV7GfeGGzZ64tFBUNPOE4nnwJVpvYkmHVT7cnR4lIw/viewform',
+      startDate: '2026-10-01'
+    };
+  
+    const ADMIN_CRED = { email: 'ragulkumarm5225@gmail.com', pass: 'RKISBACK4' };
+  
+    let staticApprovedUsers = [
+      { id: 'AISHU-001', pass: '12345', name: 'AISHU' },
+      { id: 'RC-RAGUL45', pass: '12345', name: 'Ragul Kumar' } // Added Ragul's static ID
+    ];
+    let liveSheetUsers = [];
+    let currentUser = null; 
+    let activeSlotTimer = null; 
+    let totalRegisteredCount = 0; // Tracks total approved users
+ 
+    const digitalBadges = [
+      { id: 1, type: 'tasks', min: 1, title: 'Bronze Starter', icon: 'shield', desc: 'Day 1 completed' },
+      { id: 2, type: 'tasks', min: 7, title: 'Community Spark', icon: 'sparkles', desc: 'First week mastered' },
+      { id: 3, type: 'tasks', min: 15, title: 'Rotaract Pioneer', icon: 'compass', desc: 'Halfway through 30 days' },
+      { id: 4, type: 'points', min: 100, title: 'Centurion', icon: 'star', desc: 'Earned 100+ Points' },
+      { id: 10, type: 'points', min: 300, title: 'Rotaract Legend', icon: 'award', desc: 'Earned 300+ Points' },
+      { id: 5, type: 'speed', min: 1, title: 'Speed Demon', icon: 'zap', desc: 'Answered under 30s' },
+      { id: 6, type: 'speed', min: 5, title: 'Lightning Mind', icon: 'timer', desc: '5 Fast Solves (<30s)' },
+      { id: 11, type: 'streak', min: 7, title: 'Unbroken Spirit', icon: 'trending-up', desc: '7 Day Active Streak' },
+      { id: 12, type: 'ciphers', min: 5, title: 'Master Decoder', icon: 'binary', desc: 'Cracked 5 Ciphers' },
+      { id: 13, type: 'trivia', min: 5, title: 'Historian', icon: 'book-open', desc: 'Aced 5 Trivia Quests' },
+      { id: 7, type: 'refs', min: 1, title: 'Friendly Face', icon: 'user-plus', desc: 'Invited 1 friend' },
+      { id: 8, type: 'refs', min: 5, title: 'Networker', icon: 'globe', desc: 'Invited 5 friends' },
+      { id: 9, type: 'secret', min: 1, title: 'Easter Egg', icon: 'search', desc: 'Found secret symbol' },
+      { id: 14, type: 'theme', targetTheme: 'Vault Lock', min: 1, title: 'Vault Breaker', icon: 'lock', desc: 'Cracked a Vault Lock' },
+      { id: 15, type: 'theme', targetTheme: 'Time Travel Code', min: 1, title: 'Time Weaver', icon: 'hourglass', desc: 'Solved Time Travel' },
+      { id: 16, type: 'theme', targetTheme: 'Brainiac Code', min: 1, title: 'Brainiac', icon: 'brain', desc: 'Solved Brainiac Code' },
+      { id: 17, type: 'theme', targetTheme: 'Mirror Flip', min: 1, title: 'Dimension Hopper', icon: 'flip-horizontal', desc: 'Solved Mirror Flip' },
+      { id: 18, type: 'theme', targetTheme: 'Riddles', min: 1, title: 'Riddler', icon: 'message-circle-question', desc: 'Solved a Riddle' }
+    ];
+ 
+    function getBaseChallenges() {
+      const base = [
+        { day: 1, title: "Payment of ₹10 (Screenshot Required)", theme: "Captain Signal", category: "Captain Signal", type: "upload-task", desc: "Scan the UPI QR code to pay ₹10. Upload screenshot.", points: 10, timeLimit: 0, hint: "Use any UPI app like GPay or PhonePe. The QR is on the main page." },
+        { day: 2, title: "Share in Story & Upload", theme: "Captain Signal", category: "Captain Signal", type: "upload-task", desc: "Share official poster on story, tag us, upload screenshot.", points: 10, timeLimit: 0, hint: "Make sure your account is public or the mention is visible!" },
+        { day: 3, title: "Rotaract Origin Charter Year", theme: "Trivia Puzzles", category: "Trivia Puzzles", type: "text-trivia", question: "In what specific year was the very first Rotaract club officially chartered?", acceptableAnswers: ["1968"], points: 10, timeLimit: 120, hint: "It was in the late 1960s." },
+        { day: 4, title: "BE PART OF DO OR DONATE", theme: "Logic Puzzles", category: "Logic Puzzles", type: "pledge", desc: "Commit to be a Rotaractor for participating in 'Do or Donate'.", points: 50, timeLimit: 0, hint: "Just click 'Take Pledge' below to confirm." },
+        { day: 5, title: "Code 1: The Meeting Opener", theme: "Word Puzzles", category: "Word Puzzles", type: "cipher-task", puzzleSentence: "1st letter of wooden hammer, 1st of Installation, 4th of Fellowship, 1st of Treasurer.", passcode: "GIFT", points: 10, timeLimit: 120, hint: "Take the required letter from each highlighted word." },
+        { day: 6, title: "Code 2: Project Mission", theme: "Brainiac Code", category: "Brainiac Code", type: "cipher-task", puzzleSentence: "Unscramble capital letters: 'Helping People Everywhere gives us Opportunity.'", passcode: "HOPE", points: 10, timeLimit: 120, hint: "Focus on the uppercase letters in the sentence." },
+        { day: 7, title: "Code 3: Board Room Key", theme: "Vault Lock", category: "Vault Lock", type: "cipher-task", puzzleSentence: "First of Charter, second of bOard, first of Registration, first of Event.", passcode: "CORE", points: 10, timeLimit: 120, hint: "Read carefully to see which letter number is requested for each word." },
+        { day: 8, title: "Code 4: Fellowship Cipher", theme: "Time Travel Code", category: "Time Travel Code", type: "cipher-task", puzzleSentence: "Shift each letter back by one: C - P - O - E", passcode: "BOND", points: 10, timeLimit: 120, hint: "What letter comes immediately before 'C' in the alphabet?" },
+        { day: 9, title: "Code 5: Event Goal", theme: "Mirror Flip", category: "Mirror Flip", type: "cipher-task", puzzleSentence: "Initial letter of: Technical, Entertainment, Accounts, Media.", passcode: "TEAM", points: 10, timeLimit: 120, hint: "Combine the first letters to form a word." },
+        { day: 10, title: "The Guiding Principle", theme: "Trivia Puzzles", category: "Trivia Puzzles", type: "text-trivia", question: "Primary motto of Rotary International?", acceptableAnswers: ["service above self"], points: 10, timeLimit: 120, hint: "It emphasizes putting others before your own needs." },
+        { day: 11, title: "Code 6: Parent Body Scramble", theme: "Brainiac Code", category: "Brainiac Code", type: "cipher-task", puzzleSentence: "Unscramble: Y R A T R O", passcode: "ROTARY", points: 10, timeLimit: 120, hint: "It is the name of our parent organization." },
+        { day: 12, title: "Community Clean-up", theme: "Captain Signal", category: "Captain Signal", type: "upload-task", desc: "Participate in local clean-up. Upload photo.", points: 10, timeLimit: 0, hint: "Take a photo of yourself cleaning a small area." },
+        { day: 13, title: "The Founder's Name", theme: "Trivia Puzzles", category: "Trivia Puzzles", type: "text-trivia", question: "Founder of Rotary International in 1905?", acceptableAnswers: ["paul harris", "paul p harris"], points: 10, timeLimit: 120, hint: "His first name is Paul." },
+        { day: 14, title: "Pledge to Save Water", theme: "Logic Puzzles", category: "Logic Puzzles", type: "pledge", desc: "Commit to reducing water usage.", points: 20, timeLimit: 0, hint: "Take the pledge to earn points." },
+        { day: 15, title: "Code 7: Shift Cipher", theme: "Time Travel Code", category: "Time Travel Code", type: "cipher-task", puzzleSentence: "Shift backwards by 1: M F B E", passcode: "LEAD", points: 10, timeLimit: 120, hint: "What letter comes immediately before M in the alphabet?" },
+        { day: 16, title: "The Moral Compass", theme: "Logic Puzzles", category: "Logic Puzzles", type: "text-trivia", question: "How many parts in the Rotary Way Test?", acceptableAnswers: ["4", "four"], points: 10, timeLimit: 60, hint: "It asks four distinct questions." },
+        { day: 17, title: "Literacy Donation", theme: "Captain Signal", category: "Captain Signal", type: "upload-task", desc: "Donate an educational book. Upload photo.", points: 10, timeLimit: 0, hint: "A simple notebook donation counts too!" },
+        { day: 18, title: "Code 8: Backward Reading", theme: "Mirror Flip", category: "Mirror Flip", type: "cipher-task", puzzleSentence: "Reverse: T C A R A T O R", passcode: "ROTARACT", points: 10, timeLimit: 120, hint: "Read the letters from right to left." },
+        { day: 19, title: "Rotary HQ City", theme: "Trivia Puzzles", category: "Trivia Puzzles", type: "text-trivia", question: "US City where Rotary is headquartered?", acceptableAnswers: ["evanston"], points: 10, timeLimit: 120, hint: "It's a city in Illinois, USA." },
+        { day: 20, title: "Plant a Sapling", theme: "Logic Puzzles", category: "Logic Puzzles", type: "upload-task", desc: "Plant a sapling, upload photo.", points: 10, timeLimit: 0, hint: "Even a small indoor plant in a pot counts." },
+        { day: 21, title: "Code 9: First Letters", theme: "Word Puzzles", category: "Word Puzzles", type: "cipher-task", puzzleSentence: "Extract firsts: Peace, Earth, Action, Care, Empathy.", passcode: "PEACE", points: 10, timeLimit: 90, hint: "Take the first letter of each word." },
+        { day: 22, title: "No Plastic Pledge", theme: "Riddles", category: "Riddles", type: "pledge", desc: "Eliminate single-use plastics.", points: 20, timeLimit: 0, hint: "Promise to avoid plastic bags for the rest of the challenge." },
+        { day: 23, title: "Official Color", theme: "Trivia Puzzles", category: "Trivia Puzzles", type: "text-trivia", question: "Primary official color of Rotaract?", acceptableAnswers: ["cranberry", "cranberry red"], points: 10, timeLimit: 120, hint: "It's a specific shade of red named after a berry." },
+        { day: 24, title: "Code 10: Number Cipher", theme: "Math Puzzles", category: "Math Puzzles", type: "cipher-task", puzzleSentence: "If A=1, decode: 9, 13, 16, 1, 3, 20", passcode: "IMPACT", points: 10, timeLimit: 120, hint: "Match the number to the letter's position in the alphabet (I is 9th)." },
+        { day: 25, title: "Feed a Stray", theme: "Logic Puzzles", category: "Logic Puzzles", type: "upload-task", desc: "Feed a stray animal safely, upload photo.", points: 10, timeLimit: 0, hint: "Leave a bowl of water or food out safely." },
+        { day: 26, title: "Age Limit", theme: "Riddles", category: "Riddles", type: "text-trivia", question: "Upper age limit to be a Rotaractor?", acceptableAnswers: ["none", "no limit"], points: 10, timeLimit: 90, hint: "They recently removed the age limit!" },
+        { day: 27, title: "Code 11: Missing Vowels", theme: "Brainiac Code", category: "Brainiac Code", type: "cipher-task", puzzleSentence: "Add vowels: V _ S _ _ N", passcode: "VISION", points: 10, timeLimit: 90, hint: "What word relates to seeing the future?" },
+        { day: 28, title: "Kindness Pledge", theme: "Riddles", category: "Riddles", type: "pledge", desc: "Perform one random act of kindness daily.", points: 20, timeLimit: 0, hint: "Commit to making someone smile." },
+        { day: 29, title: "The Final Question", theme: "Trivia Puzzles", category: "Trivia Puzzles", type: "text-trivia", question: "What is the core focus of Rotary's PolioPlus program?", acceptableAnswers: ["polio eradication", "end polio", "polio"], points: 20, timeLimit: 60, hint: "It involves eradicating a specific disease." },
+        { day: 30, title: "Grand Finale Reflection", theme: "Vault Lock", category: "Vault Lock", type: "upload-task", desc: "Upload a note/video of what you learned.", points: 50, timeLimit: 0, hint: "Just share a short paragraph in a screenshot!" }
+      ];
+      return base;
+    }
+  
+    let challengeSlots = JSON.parse(localStorage.getItem('rota_admin_slots')) || getBaseChallenges();
+  
+    window.addEventListener('DOMContentLoaded', () => {
+      // NEW: Check for referral link in URL (e.g., ?ref=RC-RAGUL45)
+      const urlParams = new URLSearchParams(window.location.search);
+      const refCode = urlParams.get('ref');
+      if (refCode) {
+        sessionStorage.setItem('pending_rota_ref', refCode.toUpperCase());
+      }
+
+      syncConfigUI();
+      fetchSheetLogins();
+      refreshScreen();
+      lucide.createIcons();
+      
+      const sessionUser = localStorage.getItem('rota_auth_user');
+      const cinematicIntro = document.getElementById('cinematic-video-intro');
+      const videoPlayer = document.getElementById('intro-video-player');
+  
+      if (sessionUser) {
+        if (cinematicIntro) cinematicIntro.classList.add('hidden');
+      } else {
+        if (videoPlayer) {
+          videoPlayer.play().catch(e => {
+            console.warn("Auto-play prevented. Skipping video.");
+            skipVideoIntro();
+          });
+          videoPlayer.addEventListener('ended', skipVideoIntro);
+        } else {
+            skipVideoIntro();
+        }
+      }
+    });
+  
+    function skipVideoIntro() {
+      const cinematicIntro = document.getElementById('cinematic-video-intro');
+      const canvasIntro = document.getElementById('intro-overlay');
+      const videoPlayer = document.getElementById('intro-video-player');
+      
+      if(videoPlayer) videoPlayer.pause();
+      
+      if (cinematicIntro) {
+        cinematicIntro.classList.add('opacity-0');
+        setTimeout(() => {
+          cinematicIntro.classList.add('hidden');
+          if(canvasIntro) {
+            canvasIntro.classList.remove('hidden');
+            setTimeout(() => canvasIntro.classList.remove('opacity-0'), 50);
+          }
+        }, 1000); 
+      }
+    }
+  
+    function dismissIntro() {
+      const intro = document.getElementById('intro-overlay');
+      intro.classList.add('opacity-0');
+      setTimeout(() => intro.classList.add('hidden'), 500);
+    }
+  
+    function syncConfigUI() {
+      const upiUrl = `upi://pay?pa=${encodeURIComponent(CONFIG.upiId)}&pn=${encodeURIComponent("Rotaract Challenge")}&am=10&cu=INR&tn=${encodeURIComponent("30 Day Entry")}`;
+      document.getElementById('public-upi-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(upiUrl)}&bgcolor=ffffff&color=000000`;
+      document.getElementById('public-display-upi').innerText = CONFIG.upiId;
+    }
+  
+    async function fetchSheetLogins(isManual = false) {
+      try {
+        let url = `https://opensheet.elk.sh/${GOOGLE_SHEET_ID}/${encodeURIComponent(SHEET_TAB_NAME)}`;
+        let res = await fetch(url);
+        
+        if (!res.ok) {
+          url = `https://opensheet.elk.sh/${GOOGLE_SHEET_ID}/${encodeURIComponent('form responses 1')}`;
+          res = await fetch(url);
+        }
+        if (!res.ok) {
+          url = `https://opensheet.elk.sh/${GOOGLE_SHEET_ID}/Sheet1`;
+          res = await fetch(url);
+        }
+        if (!res.ok) throw new Error("Failed to load sheet.");
+  
+        const rows = await res.json();
+        if (Array.isArray(rows)) {
+          liveSheetUsers = [];
+          
+          rows.forEach(r => {
+            let rId = '', rPass = '', rName = 'Challenger', rAppr = false;
+            for (const key in r) {
+              const k = key.toLowerCase().trim();
+              const val = (r[key] || '').toString().trim();
+              
+              if (k.includes('participant id') || k === 'id' || k.includes('email')) rId = val.toUpperCase();
+              else if (k.includes('password') || k.includes('pass')) rPass = val;
+              else if (k.includes('name') || k.includes('full name')) rName = val;
+              else if (k.includes('approval') || k.includes('approved') || k.includes('status')) {
+                rAppr = (val.toUpperCase() === 'YES');
+              }
+            }
+            if (rId && rPass && rAppr) liveSheetUsers.push({ id: rId, pass: rPass, name: rName, approved: rAppr });
+          });
+          
+          // Update Public Tracker
+          totalRegisteredCount = liveSheetUsers.length + staticApprovedUsers.length;
+          const pubTracker = document.getElementById('public-challenger-count');
+          if(pubTracker) pubTracker.innerText = `${totalRegisteredCount} Challengers Worldwide`;
+  
+          if (isManual) showToast(`Synced live! Total Approved: ${totalRegisteredCount}`);
+        }
+      } catch (err) { 
+        console.warn("Sheet fetch notice", err); 
+        if (isManual) showToast("Error: Could not connect to Google Sheet.");
+      }
+    }
+  
+    async function handleLogin(e) {
+      e.preventDefault();
+      const id = document.getElementById('login-input-id').value.trim();
+      const pass = document.getElementById('login-input-pass').value.trim();
+      const btn = document.getElementById('btn-login-submit');
+  
+      if (id === ADMIN_CRED.email && pass === ADMIN_CRED.pass) {
+        currentUser = { role: 'admin' };
+        localStorage.setItem('rota_auth_user', JSON.stringify(currentUser));
+        showToast("Welcome Administrator.");
+        refreshScreen();
+        return;
+      }
+  
+      btn.innerText = "Verifying Google Sheet...";
+      await fetchSheetLogins();
+      const matched = [...staticApprovedUsers, ...liveSheetUsers].find(u => u.id === id.toUpperCase() && u.pass === pass);
+      btn.innerHTML = `<span>Enter Portal</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+  
+      if (!matched) {
+        showToast("⚠️ Invalid ID/Password or pending approval (Must have 'YES' in Approval column).");
+        return;
+      }
+  
+      currentUser = matched;
+      localStorage.setItem('rota_auth_user', JSON.stringify(currentUser));
+
+      // NEW: Process automated referral bonus upon first successful login
+      const pendingRef = sessionStorage.getItem('pending_rota_ref');
+      if (pendingRef && pendingRef !== currentUser.id) {
+        // Check if this new user has already claimed a sign-up bonus
+        if (!localStorage.getItem('rota_applied_ref_' + currentUser.id)) {
+          // 1. Mark that the new user has received their sign-up bonus
+          localStorage.setItem('rota_applied_ref_' + currentUser.id, pendingRef);
+          
+          // 2. Credit the referrer by adding the new user's ID to their referral list
+          const referrerKey = 'rota_refs_' + pendingRef;
+          const referrerList = JSON.parse(localStorage.getItem(referrerKey) || '[]');
+          if (!referrerList.includes(currentUser.id)) {
+            referrerList.push(currentUser.id);
+            localStorage.setItem(referrerKey, JSON.stringify(referrerList));
+          }
+          setTimeout(() => showToast(`🎉 Referral applied! +5 Points for you and ${pendingRef}.`), 1000);
+        }
+        sessionStorage.removeItem('pending_rota_ref'); // Clear it so it doesn't run again
+      }
+  
+      showToast(`Welcome ${currentUser.name}! Profile unlocked 🎉`);
+      refreshScreen();
+
+      // Daily Login Quote Feature
+      setTimeout(() => {
+        const quotes = [
+          "Whatever Rotary may mean to us, to the world it will be known by the results it achieves. — Paul Harris",
+          "Service is the rent I pay for the space I occupy on this earth. — Paul Harris",
+          "Rotary is not an organization for retrospection. Its worth lies in future activity. — Paul Harris",
+          "He profits most who serves best. — Arthur F. Sheldon",
+          "Service Above Self. — Rotary Motto"
+        ];
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        showToast(`💡 ${randomQuote}`);
+      }, 1500);
+    }
+
+    function refreshScreen() {
+      const session = localStorage.getItem('rota_auth_user');
+      if (session) currentUser = JSON.parse(session);
+  
+      const viewPublic = document.getElementById('view-public');
+      const viewMember = document.getElementById('view-member');
+      const viewAdmin = document.getElementById('view-admin');
+      const navActions = document.getElementById('nav-actions-container');
+  
+      viewPublic.classList.add('hidden');
+      viewMember.classList.add('hidden');
+      viewAdmin.classList.add('hidden');
+  
+      if (currentUser?.role === 'admin') {
+        viewAdmin.classList.remove('hidden');
+        document.getElementById('header-icon').className = "w-10 h-10 rounded-2xl bg-rose-600 flex items-center justify-center shadow-lg shadow-rose-900/60";
+        document.getElementById('header-subtitle').innerText = "Admin Setup";
+        document.getElementById('header-title').innerText = "CHALLENGE CONTROL PANEL";
+        navActions.innerHTML = `
+          <button onclick="openHowToPlay()" class="p-2 mr-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-white transition" title="How to Play">
+            <i data-lucide="help-circle" class="w-4 h-4"></i>
+          </button>
+          <button onclick="handleLogout()" class="px-4 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-bold text-slate-300 hover:text-white transition">Admin Logout</button>
+        `;
+        renderAdminGrid();
+      } else if (currentUser) {
+        viewMember.classList.remove('hidden');
+        document.getElementById('header-subtitle').innerText = "ROTA CODE";
+        document.getElementById('header-title').innerText = "30-DAY CHALLENGE PORTAL";
+        document.getElementById('member-name-heading').innerText = currentUser.name;
+        document.getElementById('member-id-badge').innerText = `ID: ${currentUser.id}`;
+        document.getElementById('member-avatar').innerText = currentUser.name.slice(0, 2).toUpperCase();
+        
+        // Setup Referral Hub display as a full URL link
+        const refLink = window.location.origin + window.location.pathname + '?ref=' + currentUser.id;
+        document.getElementById('display-ref-code').innerText = refLink;
+  
+        navActions.innerHTML = `
+          <button onclick="openHowToPlay()" class="p-2 mr-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-white transition" title="How to Play">
+            <i data-lucide="help-circle" class="w-4 h-4"></i>
+          </button>
+          <span class="text-xs font-mono text-amber-300 hidden sm:inline font-bold">${currentUser.id}</span>
+          <button onclick="handleLogout()" class="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-600 text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+            <i data-lucide="log-out" class="w-3.5 h-3.5 text-rose-400"></i>
+            <span class="hidden sm:inline">Logout</span>
+          </button>
+        `;
+        switchMemberTab('home');
+        renderDashboardStats();
+        renderBadges();
+        renderChallengeCards();
+      } else {
+        viewPublic.classList.remove('hidden');
+        document.getElementById('header-subtitle').innerText = "ROTA CODE";
+        document.getElementById('header-title').innerText = "30-DAY CHALLENGE PORTAL";
+        navActions.innerHTML = `
+          <button onclick="openHowToPlay()" class="p-2 mr-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-white transition" title="How to Play">
+            <i data-lucide="help-circle" class="w-4 h-4"></i>
+          </button>
+          <a href="#form-user-login" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-rotaract-pink to-amber-600 text-white font-bold text-xs shadow transition">Login</a>
+        `;
+      }
+      lucide.createIcons();
+    }
+  
+    function switchMemberTab(tab) {
+      document.getElementById('tab-home').classList.add('hidden');
+      document.getElementById('tab-quests').classList.add('hidden');
+      document.getElementById('tab-leaderboard').classList.add('hidden');
+      document.getElementById('tab-rotabirthday').classList.add('hidden');
+      
+      const unselectedClasses = "px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 font-bold text-sm transition whitespace-nowrap flex items-center gap-2";
+      document.getElementById('btn-tab-home').className = unselectedClasses;
+      document.getElementById('btn-tab-quests').className = unselectedClasses;
+      document.getElementById('btn-tab-leaderboard').className = unselectedClasses;
+      document.getElementById('btn-tab-rotabirthday').className = unselectedClasses;
+  
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      
+      let selectedStyle = "px-5 py-2.5 rounded-xl text-white font-bold text-sm shadow-lg transition whitespace-nowrap flex items-center gap-2 border ";
+      if(tab === 'rotabirthday') {
+        selectedStyle += "bg-gradient-to-r from-amber-600 to-rose-600 border-amber-500/50 shadow-amber-900/20";
+      } else {
+        selectedStyle += "bg-rose-600 border-rose-500/50 shadow-rose-900/20";
+      }
+      document.getElementById(`btn-tab-${tab}`).className = selectedStyle;
+  
+      if (tab === 'leaderboard') renderLeaderboard();
+    }
+  
+    function renderLeaderboard() {
+      const podiumContainer = document.getElementById('leaderboard-podium');
+      const tbody = document.getElementById('leaderboard-table-body');
+      
+      let myPoints = calculatePoints(currentUser.id);
+      let myRefs = getReferralCount(currentUser.id);
+      
+      // Calculate active user badges
+      let myBadges = 0;
+      const completedSlots = getCompletedSlots();
+      const speedSolves = Object.values(JSON.parse(localStorage.getItem('rota_submissions_' + currentUser.id) || '{}')).filter(sub => sub.timeSpent <= 30 && sub.timeSpent > 0).length;
+      let myCiphers = 0, myTrivia = 0;
+      let completedThemes = {};
+
+      completedSlots.forEach(day => {
+        const slot = challengeSlots.find(s => s.day === day);
+        if(slot?.type === 'cipher-task') myCiphers++;
+        if(slot?.type === 'text-trivia') myTrivia++;
+        if(slot?.theme) completedThemes[slot.theme] = (completedThemes[slot.theme] || 0) + 1;
+      });
+      
+      digitalBadges.forEach(tier => {
+        if (tier.type === 'tasks' && completedSlots.length >= tier.min) myBadges++;
+        if (tier.type === 'points' && myPoints >= tier.min) myBadges++;
+        if (tier.type === 'speed' && speedSolves >= tier.min) myBadges++;
+        if (tier.type === 'refs' && myRefs >= tier.min) myBadges++;
+        if (tier.type === 'streak' && calculateStreak() >= tier.min) myBadges++;
+        if (tier.type === 'ciphers' && myCiphers >= tier.min) myBadges++;
+        if (tier.type === 'trivia' && myTrivia >= tier.min) myBadges++;
+        if (tier.type === 'secret' && localStorage.getItem('rota_easter_egg_' + currentUser.id)) myBadges++;
+        if (tier.type === 'theme' && (completedThemes[tier.targetTheme] || 0) >= tier.min) myBadges++;
+      });
+
+      let players = [];
+      players.push({ name: currentUser.name || "You", id: currentUser.id, refs: myRefs, badges: myBadges, points: myPoints, isMe: true });
+      
+      if (liveSheetUsers && liveSheetUsers.length > 0) {
+        liveSheetUsers.forEach((u, i) => {
+            if(u.id !== currentUser.id && u.name.toLowerCase() !== 'admin') {
+               const seedPoints = (u.id.length * 20) + (i * 30);
+               const seedRefs = i % 4; // Fake referral count
+               const seedBadges = Math.floor(seedPoints / 40) + 1; // Fake badge count
+               players.push({ name: u.name, id: u.id, refs: seedRefs, badges: Math.min(seedBadges, 18), points: seedPoints + (seedRefs * 5), isMe: false });
+            }
+         });
+      }
+ 
+      if (players.length < 5) {
+        players.push({ name: "Rtr. Sanjay M.", id: "DUMMY-1", refs: 5, badges: 6, points: 140, isMe: false });
+        players.push({ name: "Rtr. Priya K.", id: "DUMMY-2", refs: 2, badges: 3, points: 90, isMe: false });
+        players.push({ name: "Rtr. Vikram S.", id: "DUMMY-3", refs: 8, badges: 10, points: 280, isMe: false });
+      }
+ 
+      players.sort((a, b) => b.points - a.points);
+ 
+      // Render Podium (Top 3)
+      let podiumHtml = '';
+      if (players.length >= 3) {
+        const top3 = [players[1], players[0], players[2]]; // Order: 2nd, 1st, 3rd
+        const heights = ['h-32', 'h-40', 'h-28'];
+        const colors = ['from-slate-400 to-slate-600', 'from-amber-300 to-amber-600', 'from-amber-700 to-amber-900'];
+        const rings = ['ring-slate-300', 'ring-amber-400', 'ring-amber-700'];
+        const ranks = [2, 1, 3];
+        
+        podiumHtml = top3.map((p, i) => `
+          <div class="flex flex-col items-center justify-end relative group">
+            ${p.isMe ? '<div class="absolute -top-10 bg-rose-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full animate-bounce z-20">YOU</div>' : ''}
+            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-800 ring-4 ${rings[i]} flex items-center justify-center font-display font-black text-xl mb-3 shadow-[0_0_20px_rgba(0,0,0,0.5)] z-10 bg-gradient-to-tr ${colors[i]} text-slate-950">${p.name.slice(0,2).toUpperCase()}</div>
+            <div class="w-full ${heights[i]} bg-gradient-to-t ${colors[i]} rounded-t-2xl opacity-90 shadow-[0_-10px_20px_rgba(0,0,0,0.4)] relative overflow-hidden flex flex-col items-center justify-start pt-4 border-t border-white/30 transition-transform group-hover:-translate-y-2 duration-300">
+              <span class="text-3xl font-black text-white/90 font-display drop-shadow-md">#${ranks[i]}</span>
+              <span class="text-[10px] sm:text-xs font-bold text-white/90 mt-1 truncate w-full text-center px-1 drop-shadow-md">${p.name.split(' ')[0]}</span>
+              <span class="text-[10px] font-mono text-white/80 font-bold mt-0.5">${p.points} pts</span>
+            </div>
+          </div>
+        `).join('');
+      }
+      podiumContainer.innerHTML = podiumHtml;
+
+      // Render Table List
+      tbody.innerHTML = players.map((p, index) => {
+        let rankStyling = "text-slate-400";
+        if (index === 0) rankStyling = "text-amber-400 drop-shadow-md text-xl";
+        if (index === 1) rankStyling = "text-slate-300 drop-shadow-md text-lg";
+        if (index === 2) rankStyling = "text-amber-700 drop-shadow-md text-base";
+        
+        const initials = p.name.slice(0,2).toUpperCase();
+ 
+        return `
+          <tr class="transition hover:bg-slate-800/40 ${p.isMe ? 'bg-rose-950/20 border-l-2 border-rose-500' : 'border-l-2 border-transparent'}">
+            <td class="py-3 px-5 font-black font-display text-base text-center ${rankStyling}">#${index + 1}</td>
+            <td class="py-3 px-5">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-[11px] font-bold text-slate-400 border border-slate-700 shrink-0 hidden sm:flex">${initials}</div>
+                <div class="flex flex-col">
+                  <span class="font-bold text-sm ${p.isMe ? 'text-white' : 'text-slate-200'}">${p.name} ${p.isMe ? '<span class="text-[9px] bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded ml-2 border border-rose-500/30 font-bold uppercase tracking-wider hidden sm:inline-block">You</span>' : ''}</span>
+                  <span class="text-[10px] font-mono text-slate-500">${p.id}</span>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-5 text-center">
+               <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-mono font-bold" title="${p.badges} Badges Unlocked">
+                 <i data-lucide="award" class="w-3.5 h-3.5"></i> ${p.badges}
+               </div>
+            </td>
+            <td class="py-3 px-5 text-center font-mono text-xs text-slate-400">${p.refs} <i data-lucide="users" class="w-3 h-3 inline text-slate-500"></i></td>
+            <td class="py-3 px-5 text-right font-mono font-bold text-sm ${p.isMe ? 'text-rose-400' : 'text-amber-400'}">${p.points} <span class="text-[10px] text-slate-500 font-sans ml-1">pts</span></td>
+          </tr>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+  
+    function handleLogout() {
+      currentUser = null;
+      localStorage.removeItem('rota_auth_user');
+      showToast("Logged out successfully.");
+      refreshScreen();
+    }
+  
+    function getCompletedSlots(userId = currentUser?.id) {
+      if (!userId) return [];
+      return JSON.parse(localStorage.getItem('rota_completed_' + userId) || '[]');
+    }
+  
+    function getReferralCount(userId = currentUser?.id) {
+      if (!userId) return 0;
+      return JSON.parse(localStorage.getItem('rota_refs_' + userId) || '[]').length;
+    }
+  
+    function calculatePoints(userId) {
+      let totalPoints = 0;
+      const completed = getCompletedSlots(userId);
+      const submissions = JSON.parse(localStorage.getItem('rota_submissions_' + userId) || '{}');
+
+      completed.forEach(day => {
+        const slot = challengeSlots.find(s => s.day === day);
+        if (slot) {
+          if (slot.type === 'text-trivia' || slot.type === 'cipher-task') {
+             const sub = submissions[day];
+             const hasAnswer = slot.passcode || (slot.acceptableAnswers && slot.acceptableAnswers.length > 0 && slot.acceptableAnswers[0] !== "");
+             
+             if (hasAnswer && sub) {
+                 let isCorrect = false;
+                 let val = (sub.answer || '').toLowerCase().trim();
+                 
+                 if (slot.type === 'text-trivia') {
+                    const answers = slot.acceptableAnswers ? slot.acceptableAnswers.map(a=>a.toLowerCase()) : [slot.passcode?.toLowerCase()];
+                    if (answers.includes(val)) isCorrect = true;
+                 } else if (slot.type === 'cipher-task') {
+                    if (val === slot.passcode?.toLowerCase()) isCorrect = true;
+                 }
+
+                 if (isCorrect) {
+                     totalPoints += (parseInt(slot.points) || 10);
+                     if (sub.timeSpent <= 30) {
+                         totalPoints += 5; // Speed Bonus
+                     }
+                 }
+             }
+          } else {
+             // Non-trivia tasks get points instantly upon completion
+             totalPoints += (parseInt(slot.points) || 10);
+          }
+        }
+      });
+      
+      // Add referral bonus points (5 points per friend invited)
+      totalPoints += (getReferralCount(userId) * 5);
+      
+      // Add 5 points if this user signed up using someone else's link
+      if (localStorage.getItem('rota_applied_ref_' + userId)) {
+        totalPoints += 5;
+      }
+      
+      return totalPoints;
+    }
+  
+    function calculateStreak() {
+      const completed = getCompletedSlots();
+      const activeDay = getActiveAllowedDay();
+      let streak = 0;
+      // Start checking backward from the currently active day
+      for(let i = activeDay; i > 0; i--) {
+        if (completed.includes(i)) streak++;
+        else break; // Streak broken
+      }
+      return streak;
+    }
+  
+    function getActiveAllowedDay() {
+      const start = new Date(CONFIG.startDate);
+      start.setHours(0, 0, 0, 0);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+      return diffDays < 0 ? 1 : Math.min(Math.max(diffDays + 1, 1), 30);
+    }
+  
+    function renderDashboardStats() {
+      const completed = getCompletedSlots();
+      const count = completed.length;
+      const pts = calculatePoints(currentUser.id);
+      
+      document.getElementById('stat-progress').innerHTML = `${count}<span class="text-xs text-slate-500">/30</span>`;
+      document.getElementById('stat-streak').innerText = calculateStreak();
+      document.getElementById('member-score-display').innerText = pts;
+      
+      // Dynamic Rank Badges
+      let rank = "Novice";
+      if (pts > 50 && pts <= 150) rank = "Cipher Sleuth";
+      if (pts > 150) rank = "Mastermind";
+      const rankBadge = document.getElementById('member-rank-badge');
+      if (rankBadge) rankBadge.innerText = rank;
+      
+      // Update Referral Hub Display
+      document.getElementById('ref-claimed-count').innerText = getReferralCount(currentUser.id);
+    }
+
+    function copyMyRefCode() {
+      if(!currentUser) return;
+      // Generates the exact URL path with the user's ID attached
+      const refLink = window.location.origin + window.location.pathname + '?ref=' + currentUser.id;
+      
+      // Fallback for iFrame environments where navigator.clipboard might be blocked
+      const tempInput = document.createElement("input");
+      tempInput.value = refLink;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      tempInput.setSelectionRange(0, 99999); // For mobile devices
+      
+      try {
+        document.execCommand("copy");
+        showToast("Referral link copied to clipboard!");
+      } catch (err) {
+        showToast("Failed to copy link. Please select and copy manually.");
+      }
+      
+      document.body.removeChild(tempInput);
+    }
+
+    function foundEasterEgg() {
+      if(!currentUser) return;
+      if(!localStorage.getItem('rota_easter_egg_' + currentUser.id)) {
+        localStorage.setItem('rota_easter_egg_' + currentUser.id, 'true');
+        showToast("🕵️ You found the secret Easter Egg!");
+        if (typeof confetti === 'function') confetti({ particleCount: 80, spread: 70 });
+        renderBadges();
+      } else {
+        showToast("You already found the Easter Egg!");
+      }
+    }
+
+    function renderBadges() {
+      const completed = getCompletedSlots();
+      const totalPoints = calculatePoints(currentUser.id);
+      const refsCount = getReferralCount(currentUser.id);
+      const currentStreak = calculateStreak();
+      
+      const submissions = JSON.parse(localStorage.getItem('rota_submissions_' + currentUser.id) || '{}');
+      let speedSolves = 0;
+      for (const day in submissions) {
+          if (submissions[day].timeSpent <= 30 && submissions[day].timeSpent > 0) speedSolves++;
+      }
+
+      let completedCiphers = 0;
+      let completedTrivia = 0;
+      let completedThemes = {};
+      
+      completed.forEach(day => {
+        const slot = challengeSlots.find(s => s.day === day);
+        if (slot) {
+           if (slot.type === 'cipher-task') completedCiphers++;
+           if (slot.type === 'text-trivia') completedTrivia++;
+           if (slot.theme) completedThemes[slot.theme] = (completedThemes[slot.theme] || 0) + 1;
+        }
+      });
+
+      const shelf = document.getElementById('badges-shelf-container');
+      let unlockedCount = 0;
+ 
+      shelf.innerHTML = digitalBadges.map(tier => {
+        let isUnlocked = false;
+        if (tier.type === 'tasks' && completed.length >= tier.min) isUnlocked = true;
+        if (tier.type === 'points' && totalPoints >= tier.min) isUnlocked = true;
+        if (tier.type === 'speed' && speedSolves >= tier.min) isUnlocked = true;
+        if (tier.type === 'refs' && refsCount >= tier.min) isUnlocked = true;
+        if (tier.type === 'streak' && currentStreak >= tier.min) isUnlocked = true;
+        if (tier.type === 'ciphers' && completedCiphers >= tier.min) isUnlocked = true;
+        if (tier.type === 'trivia' && completedTrivia >= tier.min) isUnlocked = true;
+        if (tier.type === 'secret' && localStorage.getItem('rota_easter_egg_' + currentUser.id)) isUnlocked = true;
+        if (tier.type === 'theme' && (completedThemes[tier.targetTheme] || 0) >= tier.min) isUnlocked = true;
+
+        if (isUnlocked) unlockedCount++;
+        
+        return `
+          <div class="p-4 rounded-2xl border transition-all ${isUnlocked ? 'bg-amber-500/10 border-amber-500/40 text-amber-200 badge-unlocked-glow hover:scale-105' : 'bg-slate-900/50 border-slate-800 text-slate-500 badge-locked'} flex flex-col items-center text-center justify-center min-h-[110px]">
+             <div class="w-10 h-10 rounded-xl mb-2 ${isUnlocked ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-600'} flex items-center justify-center shadow-inner">
+               <i data-lucide="${tier.icon}" class="w-5 h-5"></i>
+             </div>
+             <h4 class="text-[10px] sm:text-xs font-black leading-tight ${isUnlocked ? 'text-white' : 'text-slate-400'}">${tier.title}</h4>
+             <div class="text-[9px] font-mono mt-1 font-semibold ${isUnlocked ? 'text-amber-400' : 'text-slate-600'} leading-tight">
+               ${isUnlocked ? 'UNLOCKED ✓' : tier.desc}
+             </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('badges-unlocked-summary').innerText = `${unlockedCount} of ${digitalBadges.length} Unlocked`;
+      lucide.createIcons();
+    }
+  
+    function renderChallengeCards() {
+      const container = document.getElementById('challenge-grid-container');
+      const completed = getCompletedSlots();
+      const activeDayLimit = getActiveAllowedDay();
+  
+      container.innerHTML = challengeSlots.map(slot => {
+        const isUnlocked = slot.day <= activeDayLimit;
+        const isDone = completed.includes(slot.day);
+        const isUpload = slot.type === 'upload-task';
+        const displayDesc = slot.desc || slot.question || slot.puzzleSentence || "Complete this challenge.";
+  
+        const officialAns = slot.passcode || (slot.acceptableAnswers && slot.acceptableAnswers.length > 0 && slot.acceptableAnswers[0] !== "" ? slot.acceptableAnswers.join(', ') : '');
+        let revealHtml = officialAns ? `<div class="mt-3 p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-[10px] font-mono text-cyan-300 break-words leading-relaxed"><span class="font-bold text-cyan-400 uppercase tracking-wider block mb-0.5">Admin Revealed Answer:</span>${officialAns}</div>` : '';
+
+        // Dynamically calculate and show status if they have answered it
+        if (isDone && (slot.type === 'text-trivia' || slot.type === 'cipher-task')) {
+             const submissions = JSON.parse(localStorage.getItem('rota_submissions_' + currentUser.id) || '{}');
+             const sub = submissions[slot.day];
+             if (sub && officialAns) {
+                 let isCorrect = false;
+                 let val = (sub.answer || '').toLowerCase().trim();
+                 if (slot.type === 'text-trivia') {
+                    const answers = slot.acceptableAnswers ? slot.acceptableAnswers.map(a=>a.toLowerCase()) : [slot.passcode?.toLowerCase()];
+                    if (answers.includes(val)) isCorrect = true;
+                 } else if (slot.type === 'cipher-task') {
+                    if (val === slot.passcode?.toLowerCase()) isCorrect = true;
+                 }
+                 
+                 let pointsEarned = 0;
+                 if(isCorrect) {
+                     pointsEarned = parseInt(slot.points) || 10;
+                     if(sub.timeSpent <= 30) pointsEarned += 5;
+                 }
+
+                 if (isCorrect) {
+                     revealHtml += `<div class="mt-2 text-[10px] text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">Result: Correct! (+${pointsEarned} Pts)</div>`;
+                 } else {
+                     revealHtml += `<div class="mt-2 text-[10px] text-rose-400 font-bold bg-rose-500/10 border border-rose-500/20 px-2 py-1 rounded">Result: Incorrect (0 Pts)</div>`;
+                 }
+             } else if (sub) {
+                  revealHtml += `<div class="mt-2 text-[10px] text-amber-400 font-bold bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded">Awaiting Admin Answer...</div>`;
+             }
+        }
+
+        if (!isUnlocked) {
+          return `
+            <div class="rounded-3xl p-5 border border-dashed border-slate-800 card-locked-pattern opacity-75 flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="px-2 py-1 rounded bg-slate-900 text-xs font-mono font-bold text-slate-500 border border-slate-800">DAY ${slot.day}</span>
+                  <span class="text-[10px] text-amber-400/80 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Locked</span>
+                </div>
+                <h4 class="text-base font-bold text-slate-500 font-display flex items-center gap-2">
+                  <i data-lucide="eye-off" class="w-4 h-4 text-slate-600"></i> Classified Mission
+                </h4>
+              </div>
+            </div>
+          `;
+        }
+  
+        return `
+          <div class="glass-panel rounded-3xl p-5 border flex flex-col justify-between ${isDone ? 'border-emerald-500/40 bg-emerald-950/15' : 'border-slate-800 hover:border-slate-600'} transition">
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-1 rounded text-xs font-mono font-bold ${isUpload ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-slate-800 text-slate-300'}">DAY ${slot.day}</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] uppercase tracking-widest font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 line-clamp-1 max-w-[120px] shadow-sm" title="${slot.theme || slot.category}">${slot.theme || slot.category}</span>
+                </div>
+                ${isDone 
+                  ? `<span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i> Done</span>`
+                  : `<span class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1"><i data-lucide="unlock" class="w-3 h-3"></i> Unlocked</span>`
+                }
+              </div>
+              <h4 class="text-base font-bold text-white font-display">${slot.title}</h4>
+              <p class="text-xs text-slate-400 mt-1.5 line-clamp-2">${displayDesc}</p>
+              <div class="mt-3 text-[10px] font-mono text-amber-300 flex items-center gap-1"><i data-lucide="star" class="w-3 h-3"></i> Points: ${slot.points || 10}</div>
+              ${revealHtml}
+            </div>
+            <div class="mt-5 pt-4 border-t border-slate-800/80">
+              ${isDone 
+                ? `<button disabled class="w-full py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-500 text-xs font-bold flex justify-center items-center gap-2 cursor-not-allowed">Completed <i data-lucide="lock" class="w-3.5 h-3.5"></i></button>`
+                : `<button onclick="openSlotModal(${slot.day})" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition flex justify-center items-center gap-2">Open Challenge <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+  
+    function openSlotModal(dayNum) {
+      if (dayNum > getActiveAllowedDay()) return;
+      const slot = challengeSlots.find(s => s.day === dayNum);
+      if (!slot) return;
+  
+      const isDone = getCompletedSlots().includes(dayNum);
+      const container = document.getElementById('modal-slot-body');
+      
+      // Reset tracking variables for this specific task attempt
+      clearInterval(activeSlotTimer);
+      activeTaskStartTime = Date.now();
+      activeSubmittedAnswer = null;
+      
+      let timerHtml = '';
+      if (slot.type === 'text-trivia' || slot.type === 'cipher-task') {
+        timerHtml = `
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-700 mb-4 shadow-inner">
+            <div class="flex items-center gap-2">
+              <i data-lucide="timer" class="w-4 h-4 text-cyan-400"></i>
+              <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Stopwatch</span>
+            </div>
+            <div id="slot-timer-display" class="text-lg font-mono font-black text-cyan-400">00:00</div>
+          </div>
+        `;
+      }
+  
+      let actionHtml = '';
+      if (slot.type === 'upload-task') {
+        actionHtml = `<div class="p-5 bg-slate-900 rounded-xl text-center border border-slate-800"><p class="text-xs text-slate-400 mb-4">${slot.desc}</p><a href="${CONFIG.googleFormUrl}" target="_blank" onclick="setTimeout(()=>markSlotAsDone(${slot.day}), 1000); closeSlotModal();" class="px-5 py-3 bg-gradient-to-r from-rose-600 to-amber-600 rounded-xl text-xs font-bold text-white inline-flex items-center gap-2 shadow-lg shadow-rose-900/30 transition hover:scale-105">Open Form & Mark Done <i data-lucide="external-link" class="w-4 h-4"></i></a></div>`;
+      } else if (slot.type === 'pledge') {
+        actionHtml = `<div class="p-4 bg-slate-900 rounded-xl border border-slate-800"><p class="text-xs text-slate-300 mb-4">${slot.desc}</p><button onclick="markSlotAsDone(${slot.day}); closeSlotModal();" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 transition text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2"><i data-lucide="heart" class="w-4 h-4"></i> Take Pledge</button></div>`;
+      } else if (slot.type === 'text-trivia') {
+        actionHtml = `
+          <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+            <p class="text-sm font-semibold text-white mb-3">${slot.question}</p>
+            <input type="text" id="slot-input-val" placeholder="Your Answer" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white mb-3 focus:outline-none focus:border-rose-500">
+            <button id="slot-btn-submit" onclick="verifyAnswer(${slot.day})" class="w-full py-2.5 bg-rose-600 text-white font-bold text-xs rounded-xl transition hover:bg-rose-500">Submit Answer</button>
+            <div id="slot-feedback" class="mt-3 text-xs hidden p-3 rounded-xl"></div>
+          </div>
+        `;
+      } else if (slot.type === 'cipher-task') {
+        actionHtml = `
+          <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+            <blockquote class="p-3 bg-slate-950 border-l-4 border-amber-500 text-sm text-slate-200 italic mb-4">${slot.puzzleSentence}</blockquote>
+            <input type="text" id="slot-input-val" placeholder="Passcode" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm font-mono tracking-widest text-amber-300 uppercase mb-3 focus:outline-none focus:border-amber-500">
+            <button id="slot-btn-submit" onclick="verifyAnswer(${slot.day})" class="w-full py-2.5 bg-amber-600 text-white font-bold text-xs rounded-xl hover:bg-amber-500 transition">Decrypt Passcode</button>
+            <div id="slot-feedback" class="mt-3 text-xs hidden p-3 rounded-xl"></div>
+          </div>
+        `;
+      }
+  
+      container.innerHTML = `
+        <div class="mb-2"><span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300">Day ${slot.day}</span></div>
+        <div class="flex items-start justify-between gap-2 mb-4">
+          <h4 class="text-lg font-black text-white font-display">${slot.title}</h4>
+          ${slot.hint ? `
+          <button onclick="document.getElementById('slot-hint-box').classList.toggle('hidden')" class="p-1.5 rounded-full bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition shrink-0" title="How to solve?">
+            <i data-lucide="help-circle" class="w-5 h-5"></i>
+          </button>` : ''}
+        </div>
+        ${slot.hint ? `<div id="slot-hint-box" class="hidden mb-4 p-3 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-cyan-200 text-xs leading-relaxed"><strong>Guide:</strong> ${slot.hint}</div>` : ''}
+        ${timerHtml}
+        ${actionHtml}
+        <div class="mt-5 pt-4 border-t border-slate-800 flex justify-end">
+          <button onclick="closeSlotModal()" class="px-6 py-2.5 bg-slate-800 text-white text-xs font-bold rounded-xl hover:bg-slate-700 transition shadow">Close Window</button>
+        </div>
+      `;
+  
+      openModalDOM('modal-slot', 'modal-slot-box');
+      lucide.createIcons();
+  
+      if (!isDone && (slot.type === 'text-trivia' || slot.type === 'cipher-task')) {
+        let secondsElapsed = 0;
+        const display = document.getElementById('slot-timer-display');
+        if (display) {
+            display.innerText = "00:00";
+            activeSlotTimer = setInterval(() => {
+                secondsElapsed++;
+                display.innerText = formatTime(secondsElapsed);
+            }, 1000);
+        }
+      }
+    }
+  
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+  
+    function verifyAnswer(dayNum) {
+      const val = (document.getElementById('slot-input-val').value || '').trim();
+      const fb = document.getElementById('slot-feedback');
+      fb.classList.remove('hidden');
+  
+      activeSubmittedAnswer = val;
+      const timeSpent = activeTaskStartTime ? Math.floor((Date.now() - activeTaskStartTime) / 1000) : 0;
+      
+      clearInterval(activeSlotTimer);
+      fb.className = "mt-3 text-xs p-3 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-emerald-200";
+      fb.innerHTML = `<strong>Answer Submitted!</strong> Your response has been recorded.`;
+      
+      const submitBtn = document.getElementById('slot-btn-submit');
+      if(submitBtn) submitBtn.classList.add('hidden');
+      
+      // Mini-Confetti for immediate dopamine hit
+      if (typeof confetti === 'function') confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      
+      markSlotAsDone(dayNum, { answer: val, timeSpent: timeSpent });
+      
+      // Auto-close modal
+      setTimeout(() => closeSlotModal(), 1500);
+    }
+
+    function markSlotAsDone(dayNum, submissionData = null) {
+      let completed = getCompletedSlots();
+      if (!completed.includes(dayNum)) {
+        completed.push(dayNum);
+        completed.sort((a, b) => a - b);
+        localStorage.setItem('rota_completed_' + currentUser.id, JSON.stringify(completed));
+        
+        let timeSpent = 0;
+        let answerStr = "Pledge/Upload Link Clicked";
+
+        if (submissionData) {
+            timeSpent = submissionData.timeSpent || 0;
+            answerStr = submissionData.answer || "";
+            const submissions = JSON.parse(localStorage.getItem('rota_submissions_' + currentUser.id) || '{}');
+            submissions[dayNum] = { answer: answerStr, timeSpent: timeSpent, timestamp: new Date().toLocaleString() };
+            localStorage.setItem('rota_submissions_' + currentUser.id, JSON.stringify(submissions));
+        } else {
+            timeSpent = activeTaskStartTime ? Math.floor((Date.now() - activeTaskStartTime) / 1000) : 0;
+            answerStr = activeSubmittedAnswer || "Pledge/Upload Link Clicked";
+        }
+        
+        // --- Global Admin Logging ---
+        const globalSubmissions = JSON.parse(localStorage.getItem('rota_global_submissions') || '[]');
+        globalSubmissions.push({
+           userId: currentUser.id,
+           userName: currentUser.name,
+           day: dayNum,
+           answer: answerStr,
+           timeSpent: timeSpent,
+           timestamp: new Date().toLocaleString()
+        });
+        localStorage.setItem('rota_global_submissions', JSON.stringify(globalSubmissions));
+        // ----------------------------------
+
+        showToast(`Day ${dayNum} completed! ⭐`);
+        renderDashboardStats();
+        renderBadges();
+        renderChallengeCards();
+        if (completed.length === 30) triggerGrandFinaleCelebration();
+      }
+    }
+  
+    function renderAdminGrid() {
+      const container = document.getElementById('admin-grid-container');
+      container.innerHTML = challengeSlots.map(slot => `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-rose-500/50 transition">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold font-mono text-slate-400">Day ${slot.day}</span>
+              <span class="text-[10px] uppercase font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded">${slot.type}</span>
+            </div>
+            <h4 class="text-sm font-bold text-white mb-1 line-clamp-1">${slot.title}</h4>
+            <div class="text-[10px] text-slate-500 flex gap-2">
+              <span>Points: ${slot.points || 10}</span>
+              <span>Time: ${slot.timeLimit > 0 ? slot.timeLimit + 's' : 'Off'}</span>
+            </div>
+          </div>
+          <button onclick="openAdminEditModal(${slot.day})" class="mt-4 w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="edit-2" class="w-3.5 h-3.5"></i> Edit Task
+          </button>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+  
+    function openAdminEditModal(dayNum) {
+      const slot = challengeSlots.find(s => s.day === dayNum);
+      if(!slot) return;
+  
+      document.getElementById('admin-edit-day').innerText = slot.day;
+      document.getElementById('admin-edit-title').value = slot.title;
+      document.getElementById('admin-edit-category').value = slot.theme || slot.category || "";
+      document.getElementById('admin-edit-type').value = slot.type;
+      
+      const descVal = slot.puzzleSentence || slot.question || slot.desc || "";
+      document.getElementById('admin-edit-desc').value = descVal;
+      document.getElementById('admin-edit-hint').value = slot.hint || "";
+  
+      const ansVal = slot.passcode || (slot.acceptableAnswers ? slot.acceptableAnswers.join(", ") : "");
+      document.getElementById('admin-edit-answer').value = ansVal;
+  
+      document.getElementById('admin-edit-points').value = slot.points || 10;
+      document.getElementById('admin-edit-time').value = slot.timeLimit || 0;
+  
+      openModalDOM('modal-admin-edit', 'modal-admin-box');
+    }
+  
+    function saveAdminSlot(e) {
+      e.preventDefault();
+      const dayNum = parseInt(document.getElementById('admin-edit-day').innerText);
+      const slotIndex = challengeSlots.findIndex(s => s.day === dayNum);
+      if(slotIndex === -1) return;
+  
+      const type = document.getElementById('admin-edit-type').value;
+      const descText = document.getElementById('admin-edit-desc').value.trim();
+      const hintText = document.getElementById('admin-edit-hint').value.trim();
+      const ansText = document.getElementById('admin-edit-answer').value.trim();
+      const themeText = document.getElementById('admin-edit-category').value.trim();
+  
+      const newSlot = {
+        day: dayNum,
+        title: document.getElementById('admin-edit-title').value.trim(),
+        theme: themeText,
+        category: themeText, // Retaining category for backward compatibility
+        type: type,
+        hint: hintText,
+        points: parseInt(document.getElementById('admin-edit-points').value) || 10,
+        timeLimit: parseInt(document.getElementById('admin-edit-time').value) || 0
+      };
+  
+      if (type === 'cipher-task') {
+        newSlot.puzzleSentence = descText;
+        newSlot.passcode = ansText.toUpperCase();
+      } else if (type === 'text-trivia') {
+        newSlot.question = descText;
+        newSlot.acceptableAnswers = ansText.split(',').map(s => s.trim().toLowerCase()).filter(s=>s);
+      } else {
+        newSlot.desc = descText;
+      }
+  
+      challengeSlots[slotIndex] = newSlot;
+      localStorage.setItem('rota_admin_slots', JSON.stringify(challengeSlots));
+      
+      showToast(`Day ${dayNum} updated successfully.`);
+      closeAdminModal();
+      renderAdminGrid();
+    }
+  
+    function openAdminLogs() {
+        const logs = JSON.parse(localStorage.getItem('rota_global_submissions') || '[]').reverse();
+        const tbody = document.getElementById('admin-logs-tbody');
+        
+        if (logs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500 text-sm">No submissions recorded yet.</td></tr>`;
+        } else {
+            tbody.innerHTML = logs.map(log => `
+                <tr class="hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-4 text-[11px] text-slate-400 font-mono whitespace-nowrap">${log.timestamp}</td>
+                    <td class="py-3 px-4">
+                        <div class="text-sm font-bold text-white">${log.userName}</div>
+                        <div class="text-[10px] text-amber-400 font-mono">${log.userId}</div>
+                    </td>
+                    <td class="py-3 px-4 text-sm font-bold text-rose-300">Day ${log.day}</td>
+                    <td class="py-3 px-4 text-sm font-mono text-emerald-300 break-words max-w-[200px]">${log.answer}</td>
+                    <td class="py-3 px-4 text-right text-xs font-mono text-cyan-400">${log.timeSpent}s</td>
+                </tr>
+            `).join('');
+        }
+        
+        openModalDOM('modal-admin-logs', 'modal-admin-logs-box');
+    }
+
+    function closeAdminLogs() {
+        closeModalDOM('modal-admin-logs', 'modal-admin-logs-box');
+    }
+
+    function clearAdminLogs() {
+        if(confirm("Are you sure you want to clear all participant submission logs?")) {
+            localStorage.removeItem('rota_global_submissions');
+            openAdminLogs();
+            showToast("Logs cleared.");
+        }
+    }
+
+    function resetToDefaults() {
+      if(confirm("Are you sure you want to restore the default 30 days? This will overwrite your custom admin edits.")) {
+        challengeSlots = getBaseChallenges();
+        localStorage.setItem('rota_admin_slots', JSON.stringify(challengeSlots));
+        renderAdminGrid();
+        showToast("Restored factory default challenges.");
+      }
+    }
+  
+    function triggerGrandFinaleCelebration() {
+      const name = currentUser ? currentUser.name.toUpperCase() : "CHALLENGER";
+      document.getElementById('cert-participant-name').innerText = name;
+      
+      try {
+        if (typeof Tone !== 'undefined') {
+          Tone.start();
+          const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+          synth.volume.value = -6;
+          const now = Tone.now();
+          synth.triggerAttackRelease(["C4", "E4", "G4"], "8n", now);
+          synth.triggerAttackRelease(["E4", "G4", "C5"], "8n", now + 0.2);
+          synth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "2n", now + 0.4);
+        }
+      } catch (e) {}
+  
+      if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+      openModalDOM('modal-levelup');
+      lucide.createIcons();
+    }
+  
+    function closeLevelUpModal() { closeModalDOM('modal-levelup'); }
+    function closeSlotModal() { 
+      clearInterval(activeSlotTimer);
+      closeModalDOM('modal-slot', 'modal-slot-box'); 
+    }
+    function closeAdminModal() { closeModalDOM('modal-admin-edit', 'modal-admin-box'); }
+    function openHowToPlay() { openModalDOM('modal-how-to', 'modal-how-to-box'); }
+    function closeHowToPlay() { closeModalDOM('modal-how-to', 'modal-how-to-box'); }
+  
+    function openModalDOM(modalId, boxId) {
+      const m = document.getElementById(modalId);
+      m.classList.remove('hidden');
+      setTimeout(() => {
+        m.classList.remove('opacity-0');
+        if (boxId) document.getElementById(boxId).classList.remove('scale-95');
+      }, 10);
+    }
+  
+    function closeModalDOM(modalId, boxId) {
+      const m = document.getElementById(modalId);
+      m.classList.add('opacity-0');
+      if (boxId) document.getElementById(boxId).classList.add('scale-95');
+      setTimeout(() => m.classList.add('hidden'), 200);
+    }
+  
+    function showToast(msg) {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = "px-4 py-3 bg-slate-900 border border-slate-700 text-white text-xs font-semibold rounded-xl shadow-2xl flex items-center gap-2 transform transition-all duration-300 opacity-0 translate-y-2 pointer-events-auto";
+      t.innerHTML = `<span class="text-rose-400">●</span><span>${msg}</span>`;
+      c.appendChild(t);
+      setTimeout(() => t.classList.remove('opacity-0', 'translate-y-2'), 10);
+      setTimeout(() => {
+        t.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => t.remove(), 300);
+      }, 3400);
+    }
+  
+    function initGoldenCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let particlesArray;
+      
+      let mouse = { x: null, y: null, radius: 100 };
+      
+      canvas.addEventListener('mousemove', function(event) {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = event.clientX - rect.left;
+        mouse.y = event.clientY - rect.top;
+      });
+      canvas.addEventListener('mouseleave', function() {
+        mouse.x = null;
+        mouse.y = null;
+      });
+  
+      function resize() {
+        canvas.width = canvas.parentElement.clientWidth || window.innerWidth;
+        canvas.height = canvas.parentElement.clientHeight || window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+  
+      class Particle {
+        constructor(x, y, directionX, directionY, size, color) {
+          this.x = x;
+          this.y = y;
+          this.directionX = directionX;
+          this.directionY = directionY;
+          this.size = size;
+          this.color = color;
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+        }
+        update() {
+          if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+          if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+  
+          if (mouse.x != null) {
+            let dx = mouse.x - this.x;
+            let dy = mouse.y - this.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < mouse.radius + this.size) {
+              if (mouse.x < this.x && this.x < canvas.width - this.size * 10) this.x += 3;
+              if (mouse.x > this.x && this.x > this.size * 10) this.x -= 3;
+              if (mouse.y < this.y && this.y < canvas.height - this.size * 10) this.y += 3;
+              if (mouse.y > this.y && this.y > this.size * 10) this.y -= 3;
+            }
+          }
+          this.x += this.directionX;
+          this.y += this.directionY;
+          this.draw();
+        }
+      }
+  
+      function init() {
+        particlesArray = [];
+        let numberOfParticles = (canvas.height * canvas.width) / 6000;
+        for (let i = 0; i < numberOfParticles; i++) {
+          let size = (Math.random() * 2) + 1;
+          let x = (Math.random() * ((canvas.width - size * 2) - (size * 2)) + size * 2);
+          let y = (Math.random() * ((canvas.height - size * 2) - (size * 2)) + size * 2);
+          let directionX = (Math.random() * 1) - 0.5;
+          let directionY = (Math.random() * 1) - 0.5;
+          let color = '#F59E0B'; 
+          particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+        }
+      }
+  
+      function animate() {
+        requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        for (let i = 0; i < particlesArray.length; i++) {
+          particlesArray[i].update();
+        }
+        connect();
+      }
+  
+      function connect() {
+        let opacityValue = 1;
+        for (let a = 0; a < particlesArray.length; a++) {
+          for (let b = a; b < particlesArray.length; b++) {
+            let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + 
+                           ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+            if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+              opacityValue = 1 - (distance / 10000);
+              ctx.strokeStyle = `rgba(245, 158, 11, ${opacityValue})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+              ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+  
+      init();
+      animate();
+    }
+  
+    window.addEventListener('load', () => {
+      initGoldenCanvas('intro-interactive-canvas');
+    });
+  </script>
+</body>
+</html>
